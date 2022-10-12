@@ -1,0 +1,10 @@
+<%- include('../includes/header.ejs', {pageTitle: 'Login'}) %>
+
+<h1>Login</h1>
+<form action="/login" method="post" id="login-form">
+    <p><input type="text" name="username" id="login-username" placeholder="Username" /></p>
+    <p><input type="text" name="roomID" id="login-roomid" placeholder="Room ID" /></p>
+    <input type="submit" value="Login" />
+</form>
+
+<%- include('../includes/footer.ejs', {pageTitle: 'Login'}) %>
