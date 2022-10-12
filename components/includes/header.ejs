@@ -1,0 +1,22 @@
+<html>
+    <head>
+        <title><%= pageTitle %> | Chat app</title>
+        <style></style>
+        <script src="/socket.io/socket.io.js" defer></script>
+        <script src="/scripts/peerjs.min.js" defer></script>
+        <script src="/scripts/utils.js" defer></script>
+        <script src="/scripts/roomUser.js" defer></script>
+        <script src="/scripts/user.js" defer></script>
+        <script src="/scripts/chat.js" defer></script>
+        <script src="/scripts/room.js" defer></script>
+        <script src="/scripts/main.js" defer></script>
+        <script>
+            const ROOM_ID = "<%= typeof roomID != typeof undefined ? roomID : null %>";
+        </script>
+        <style>
+            .user--offline {
+                color: lightgray;
+            }
+        </style>
+    </head>
+    <body>
