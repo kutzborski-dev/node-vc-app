@@ -23,3 +23,20 @@ chat.on('receive-users', users => {
         roomUsers.innerHTML = users.map(user => '<span class="user user--'+ (user.online ? 'online' : 'offline') +'">'+ user.username +'</span>').join(', ');
     }
 });
+
+chat.on('receive-rooms', rooms => {
+    const roomsContainer = document.querySelector('#rooms');
+
+    if(!rooms.length) {
+        roomsContainer.innerHTML = `<h3>You haven't joined any rooms yet. Either <a href="/room/${uuid()}">Create your own</a> or join another room via an invitation.</h3>`;
+        return;
+    }
+
+    rooms.forEach(room => {
+        var cardHtml = ROOM_CARD_HTML;
+
+        const matches = cardHtml.match(/\{(.?)}/);
+
+        console.log('matches', matches);
+    });
+});

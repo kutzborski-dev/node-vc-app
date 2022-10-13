@@ -44,7 +44,7 @@ export default class Router {
             return res.redirect('/room/'+ roomID);
         });
 
-        this.get('rooms', (req, res) => {
+        this.get('/rooms', (req, res) => {
             res.render('views/rooms.ejs');
         });
 

@@ -11,19 +11,25 @@ function Chat(host = '/', port = 3001) {
     });
 
     if(ROOM_ID) this.room = new Room(ROOM_ID, this);
+    if(this.user.isLoggedIn()) this.socket.emit('user-login', this.user.uuid, this.user.data);
 
     this.on = (key, cb = null) => {
         this.listeners[key] = cb;
 
-        if(key == 'receive-users' && this.user.isLoggedIn()) {
-            this.room.join();
-            this.listeners['receive-users'](this.room.users);
+        if(this.user.isLoggedIn()) {
+            switch(key) {
+                case 'receiver-users':
+                    if(!this.room) return;
+                    this.room.join();
+                    this.listeners['receive-users'](this.room.users);
+                break;
+            }
         }
     }
 
     this.peer.on('open', (clientID) => {
-        if(!this.room) return;
-        
+        if(!this.user.isLoggedIn()) return;
+
         this.socket.on('update-user', user => {
             let userIndex = this.room.users.findIndex(u => u.uuid === user.uuid);
 
@@ -34,8 +40,17 @@ function Chat(host = '/', port = 3001) {
                 this.listeners['receive-users'](this.room.users);
             }
         });
+
+        this.socket.on('receive-rooms', rooms => {
+            this.rooms = rooms;
+
+            //trigger listener if active
+            if(this.listeners['receive-rooms'] && typeof this.listeners['receive-rooms'] == typeof Function) {
+                this.listeners['receive-rooms'](this.rooms);
+            }
+        });
         
-        if(this.room.id) {
+        if(this.room && this.room.id) {
             this.peer.on('connection', conn => {
                 conn.on('open', () => {
                     conn.on('data', data => {

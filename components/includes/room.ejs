@@ -1,0 +1,27 @@
+<div class="room-card">
+    <div class="room-card-header">
+        <div class="room-card-name">
+            <h3><%= room.name ? room.name : "{name}" %></h3>
+            <span class="room-card-role room-card-role--<%= room.user && room.user.role ? room.user.role.toLowerCase().replace(/ /g, '_') : '{user.role}' %>"><%= room.user && room.user.role ? room.user.role : "{user.role}" %></span>
+        </div>
+    </div>
+
+    <div class="room-card-content">
+        <div class="room-card-content-header">
+            <span class="room-card-createdate">Created: <%= room.create_date || "{create_date}" %></span>
+            <span class="room-card-usercount">Users: <%= room.user_count || "{user_count}" %></span>
+        </div>
+
+        <div class="room-card-desc">
+            <p><%= room.desc || "{desc}" %></p>
+        </div>
+
+        <div class="room-card-content-footer">
+            <% if(room.joined) { %>
+                <span class="room-card-joindate">Joined: <%= room.user.join_date || "{join_date}" %></span>
+            <% } else { %>
+                <a class="room-card-joinbtn" href="/room/<%= room.id || '{id}' %>" target="_blank">Join room</a>
+            <% } %>
+        </div>
+    </div>
+</div>

@@ -3,6 +3,7 @@ import { uuid } from 'uuidv4';
 export default class User {
     constructor(userID) {
         this.uuid = userID ?? uuid();
+        this.rooms = [];
     }
 
     set(key = null, val = null) {

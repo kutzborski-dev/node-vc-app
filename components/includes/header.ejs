@@ -1,10 +1,15 @@
 <html>
     <head>
-        <title><%= pageTitle %> | Chat app</title>
+        <title><%= pageTitle || 'Title' %> | Chat app</title>
         <style></style>
+        <script>
+            if(window.location.pathname.includes('/rooms')) {
+                var ROOM_CARD_HTML = `<%- include("room.ejs", {room: {}}) %>`;
+            }
+        </script>
+        <script src="/scripts/utils.js" defer></script>
         <script src="/socket.io/socket.io.js" defer></script>
         <script src="/scripts/peerjs.min.js" defer></script>
-        <script src="/scripts/utils.js" defer></script>
         <script src="/scripts/roomUser.js" defer></script>
         <script src="/scripts/user.js" defer></script>
         <script src="/scripts/chat.js" defer></script>
