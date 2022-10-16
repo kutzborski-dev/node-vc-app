@@ -26,15 +26,19 @@ export default class App {
 
             let user = App.users.get(userID);
 
-            var userRooms = user.rooms.filter(roomID => this.rooms.has(roomID));
+            var userRooms = user.rooms.filter(roomID => App.rooms.has(roomID));
 
             userRooms = userRooms.map(roomID => {
-                var room = this.rooms.get(roomID);
+                var room = App.rooms.get(roomID);
 
                 var roomData = {...room};
                 roomData.user_count = roomData.users.size;
-                roomData.user = room.users.get(userID) ?? null;
+                roomData.user = {...room.users.get(userID)} ?? null;
 
+                delete roomData.user.rooms;
+                delete roomData.user.online;
+                delete roomData.user.uuid;
+                
                 delete roomData.users;
 
                 return roomData;
@@ -68,13 +72,15 @@ export default class App {
             socket.on('joined-room', (roomID, userID, clientID) => {
                 let room = App.rooms.get(roomID) ?? new Room(roomID);
                 let user = App.users.get(userID);
-                user.rooms.push(roomID);
-                if(!user.online) user.online = true;
                 const hasUser = room.hasUser(userID);
+                if(!user.online) user.online = true;
+
+                if(!hasUser) {
+                    user.rooms.push(roomID);
+                    room.addUser(user);
+                }
+
                 App.users.set(user);
-
-                if(!hasUser) room.addUser(user);
-
                 App.rooms.set(room);
 
                 socket.join(roomID);

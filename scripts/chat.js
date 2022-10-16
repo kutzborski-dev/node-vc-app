@@ -27,6 +27,15 @@ function Chat(host = '/', port = 3001) {
         }
     }
 
+    this.socket.on('receive-rooms', rooms => {
+        this.rooms = rooms;
+
+        //trigger listener if active
+        if(this.listeners['receive-rooms'] && typeof this.listeners['receive-rooms'] == typeof Function) {
+            this.listeners['receive-rooms'](this.rooms);
+        }
+    });
+
     this.peer.on('open', (clientID) => {
         if(!this.user.isLoggedIn()) return;
 
@@ -38,15 +47,6 @@ function Chat(host = '/', port = 3001) {
             //trigger listener if active
             if(this.listeners['receive-users'] && typeof this.listeners['receive-users'] == typeof Function) {
                 this.listeners['receive-users'](this.room.users);
-            }
-        });
-
-        this.socket.on('receive-rooms', rooms => {
-            this.rooms = rooms;
-
-            //trigger listener if active
-            if(this.listeners['receive-rooms'] && typeof this.listeners['receive-rooms'] == typeof Function) {
-                this.listeners['receive-rooms'](this.rooms);
             }
         });
         
