@@ -2,6 +2,9 @@ function Chat(host = '/', port = 3001) {
     this.listeners = {};
     this.socket = io('/');
     this.user = new User(this);
+    this.rooms = [];
+    //Current room
+    this.room = new Room(null, this);
     this.peer = new Peer(undefined, {
         host,
         port,
@@ -10,7 +13,6 @@ function Chat(host = '/', port = 3001) {
         }
     });
 
-    if(ROOM_ID) this.room = new Room(ROOM_ID, this);
     if(this.user.isLoggedIn()) this.socket.emit('user-login', this.user.uuid, this.user.data);
 
     this.on = (key, cb = null) => {

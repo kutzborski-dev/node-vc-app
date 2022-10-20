@@ -2,6 +2,8 @@ import * as path from 'path';
 import express from 'express';
 import App from '../services/app.js';
 import { isUuid, uuid } from 'uuidv4';
+import Room from './room.js';
+import User from './user.js';
 
 export default class Router {
     triggereQueue = [];
@@ -39,24 +41,24 @@ export default class Router {
         });
 
         this.post('/login', (req, res,) => {
-            let roomID = isUuid(req.body.roomID) ? red.body.roomID : uuid();
-
-            return res.redirect('/room/'+ roomID);
+            return res.redirect('/rooms');
         });
 
         this.get('/rooms', (req, res) => {
             res.render('views/rooms.ejs');
         });
 
+        this.get('/room/create', (req, res) => {
+            res.render('views/roomCreate.ejs');
+        });
+
         this.get('/room/:roomID', (req, res) => {
             if(!req.params.roomID || !isUuid(req.params.roomID)) return res.redirect('rooms');
-            const roomID = req.params.roomID;
 
-            let roomData = {
-                roomID
-            }
+            const rooms = App.cache.get('rooms');
+            console.log('rooms', rooms);
 
-            res.render('views/room.ejs', roomData);
+            res.render('views/room.ejs');
         });
     }
 

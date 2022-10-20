@@ -7,6 +7,7 @@ import Rooms from './rooms.js';
 import Room from './room.js';
 import User from './user.js';
 import * as path from 'path';
+import NodeCache from 'node-cache';
 
 export default class App {
     static basePath = path.resolve('./');
@@ -14,6 +15,7 @@ export default class App {
     static init(port, cb = null) {
         this.users = new Users;
         this.rooms = new Rooms;
+        this.cache = new NodeCache();
         
         this.router = new Router(express());
         this.router.setup();
@@ -69,8 +71,29 @@ export default class App {
                 user.set(userData);
             });
 
+            socket.on('create-room', (roomData) => {
+                roomData.uuid = uuid();
+                let room = new Room(roomData);
+                
+                App.rooms.set(room);
+
+                roomData = {...room};
+
+                if(roomData.user) {
+                    delete roomData.user.rooms;
+                    delete roomData.user.online;
+                    delete roomData.user.uuid;
+                }
+                
+                delete roomData.users;
+
+                socket.emit('room-created', roomData);
+            });
+
             socket.on('joined-room', (roomID, userID, clientID) => {
-                let room = App.rooms.get(roomID) ?? new Room(roomID);
+                let room = App.rooms.get(roomID);
+                if(!room) return;
+                
                 let user = App.users.get(userID);
                 const hasUser = room.hasUser(userID);
                 if(!user.online) user.online = true;
@@ -82,6 +105,9 @@ export default class App {
 
                 App.users.set(user);
                 App.rooms.set(room);
+
+                App.cache.set('rooms', App.rooms.get());
+                console.log('App.cache.get("rooms")', App.cache.get('rooms'));
 
                 socket.join(roomID);
 

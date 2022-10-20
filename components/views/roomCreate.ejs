@@ -1,0 +1,13 @@
+<% var pageTitle = 'Create new room' %>
+<%- include('../includes/header.ejs', {pageTitle: pageTitle}) %>
+
+<h1><%= pageTitle %></h1>
+
+<div id="room-form-container" class="container">
+    <form method="post" id="room-form">
+        <input type="text" id="room-name" name="name" placeholder="Room name/title" />
+        <input type="submit" value="Create" />
+    </form>
+</div>
+
+<%- include('../includes/footer.ejs', {pageTitle: pageTitle}) %>

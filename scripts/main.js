@@ -1,5 +1,5 @@
 const loginForm = document.querySelector('#login-form');
-const createRoomBtn = document.querySelector('#create-room');
+const createRoomForm = document.querySelector('#room-form');
 const chat = new Chat;
 const urlPath = window.location.pathname;
 
@@ -17,14 +17,20 @@ if(window.location.pathname.includes('login')) {
 
 if(!urlPath.match(/\/|home|login/) && !chat.user.isLoggedIn()) location.href = '/login';
 
-if(createRoomBtn) {
-    createRoomBtn.onclick = function() {
-        location.href = '/room/'+ uuid();
+if(createRoomForm) {
+    createRoomForm.onsubmit = function(e) {
+        e.preventDefault();
+        let roomName = document.querySelector("#room-form #room-name").value;
+
+        chat.room.create({
+            name: roomName
+        });
     }
 }
 
 chat.on('receive-users', users => {
     const roomUsers = document.querySelector("#room-users");
+    if(!roomUsers) return;
 
     if(roomUsers && users.length) {
         roomUsers.innerHTML = users.map(user => `<span class="user user--${(user.online ? 'online' : 'offline')}">${user.username}</span>`).join(', ');
@@ -33,10 +39,10 @@ chat.on('receive-users', users => {
 
 chat.on('receive-rooms', rooms => {
     const roomsContainer = document.querySelector('#rooms');
-    console.log('rooms', rooms);
+    if(!roomsContainer) return;
 
     if(!rooms.length) {
-        roomsContainer.innerHTML = `<h3>You haven't joined any rooms yet. Either <a href="/room/${uuid()}">Create your own</a> or join another room via an invitation.</h3>`;
+        roomsContainer.innerHTML = `<h3>You haven't joined any rooms yet. Either <a href="/room/create">Create your own</a> or join another room via an invitation.</h3>`;
         return;
     }
 

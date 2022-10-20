@@ -1,6 +1,11 @@
 function Room(roomData, instance) {
     this.instance = instance;
-    this.data = typeof roomData == 'object' ? roomData : {id: roomData, users: []};
+
+    if(roomData) {
+        this.data = typeof roomData == 'object' ? roomData : {id: roomData, users: []};
+    } else {
+        this.data = null;
+    }
 
     this.hasUser = (userID = null) => {
         if(userID === null) userID = this.instance.user.uuid;
@@ -29,8 +34,17 @@ function Room(roomData, instance) {
     this.removeUser = (user) => {
         const userIndex = this.data.users.findIndex(u => u.uuid === user.uuid);
         if(userIndex < 0) return;
+        const lastUser = this.data.users.length == 1;
 
         this.data.users.splice(userIndex, 1);
+
+        this.instance.socket.emit('leave-room', user.uuid);
+
+        if(lastUser) {
+            //Remove room if user was the last one in the room
+            this.instance.rooms = this.instance.rooms.filter(room => room.id !== this.id);
+            this.data = null;
+        }
         return true;
     }
 
@@ -39,8 +53,17 @@ function Room(roomData, instance) {
         location.href = '/rooms';
     }
 
+    this.create = (roomData) => {
+        this.instance.socket.emit('create-room', roomData);
+        this.instance.socket.on('room-created', data => {
+            this.data = data;
+            this.instance.rooms.push(this);
+        });
+    };
+
     return new Proxy(this, {
         get: function(target, prop){
+            if(!target.data && ['hasUser', 'join', 'set', 'removeUser', 'leave'].includes(prop)) return undefined;
             if(prop in target) return target[prop];
             if(prop in target.data) return target.data[prop];
             return undefined;
