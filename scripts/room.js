@@ -2,7 +2,7 @@ function Room(roomData, instance) {
     this.instance = instance;
 
     if(roomData) {
-        this.data = typeof roomData == 'object' ? roomData : {id: roomData, users: []};
+        this.data = typeof roomData == 'object' ? roomData : {uuid: roomData, users: []};
     } else {
         this.data = null;
     }
@@ -42,7 +42,7 @@ function Room(roomData, instance) {
 
         if(lastUser) {
             //Remove room if user was the last one in the room
-            this.instance.rooms = this.instance.rooms.filter(room => room.id !== this.id);
+            this.instance.rooms = this.instance.rooms.filter(room => room.uuid !== this.uuid);
             this.data = null;
         }
         return true;
@@ -54,10 +54,13 @@ function Room(roomData, instance) {
     }
 
     this.create = (roomData) => {
+        console.log('roomData', roomData);
         this.instance.socket.emit('create-room', roomData);
         this.instance.socket.on('room-created', data => {
             this.data = data;
             this.instance.rooms.push(this);
+
+            location.href = '/room/'+ data.uuid;
         });
     };
 
@@ -65,7 +68,7 @@ function Room(roomData, instance) {
         get: function(target, prop){
             if(!target.data && ['hasUser', 'join', 'set', 'removeUser', 'leave'].includes(prop)) return undefined;
             if(prop in target) return target[prop];
-            if(prop in target.data) return target.data[prop];
+            if(target.data && prop in target.data) return target.data[prop];
             return undefined;
         }
     });

@@ -1,7 +1,7 @@
 import * as path from 'path';
 import express from 'express';
 import App from '../services/app.js';
-import { isUuid, uuid } from 'uuidv4';
+import { isUuid } from 'uuidv4';
 
 export default class Router {
     triggereQueue = [];

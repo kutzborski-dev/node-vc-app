@@ -23,7 +23,7 @@ export default class Room {
         if(typeof key === 'object') {
             const roomData = key;
 
-            Object.keys(userData).forEach(k => {
+            Object.keys(roomData).forEach(k => {
                 if(typeof this[k] === typeof Function) return;
                 this[k] = roomData[k];
             });

@@ -1,8 +1,9 @@
-<%- include('../includes/header.ejs', {pageTitle: 'Room', roomID: roomID}) %>
+<% var pageTitle = 'Room' %>
+<%- include('../includes/header.ejs', {pageTitle: pageTitle}) %>
 
-<h1>Room</h1>
+<h1><%= pageTitle %></h1>
 
 <h3>Room users</h3>
 <div id="room-users"></div>
 
-<%- include('../includes/footer.ejs', {pageTitle: 'Login'}) %>
+<%- include('../includes/footer.ejs', {pageTitle: pageTitle}) %>

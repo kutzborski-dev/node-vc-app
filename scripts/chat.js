@@ -52,7 +52,7 @@ function Chat(host = '/', port = 3001) {
             }
         });
         
-        if(this.room && this.room.id) {
+        if(this.room && this.room.uuid) {
             this.peer.on('connection', conn => {
                 conn.on('open', () => {
                     conn.on('data', data => {
@@ -74,7 +74,7 @@ function Chat(host = '/', port = 3001) {
                 });
             });
         
-            this.socket.emit('joined-room', this.room.id, this.user.uuid, clientID);
+            this.socket.emit('joined-room', this.room.uuid, this.user.uuid, clientID);
 
             this.socket.on('update-user', user => {
                 let userIndex = this.room.users.findIndex(u => u.uuid === user.uuid);

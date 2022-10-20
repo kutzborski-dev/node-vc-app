@@ -8,6 +8,7 @@ import Room from './room.js';
 import User from './user.js';
 import * as path from 'path';
 import NodeCache from 'node-cache';
+import { uuid } from 'uuidv4';
 
 export default class App {
     static basePath = path.resolve('./');
@@ -78,12 +79,6 @@ export default class App {
                 App.rooms.set(room);
 
                 roomData = {...room};
-
-                if(roomData.user) {
-                    delete roomData.user.rooms;
-                    delete roomData.user.online;
-                    delete roomData.user.uuid;
-                }
                 
                 delete roomData.users;
 
