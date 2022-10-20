@@ -51,6 +51,15 @@ function Chat(host = '/', port = 3001) {
                 this.listeners['receive-users'](this.room.users);
             }
         });
+
+        if(!window.location.pathname.includes('/room/create') && window.location.pathname.includes('/room/')) {
+            //User trying to join a room
+            //Get room ID from URL
+            var roomID = window.location.pathname;
+            roomID = roomID.replace('/room/', '');
+            
+            this.socket.emit('join-room', roomID, this.user.uuid, clientID);
+        }
         
         //if(this.room && this.room.uuid) {
             this.peer.on('connection', conn => {
@@ -76,12 +85,22 @@ function Chat(host = '/', port = 3001) {
             });
         
             console.log('this.room', this.room);
-            if(window.location.pathname.includes('/room/') && !window.location.pathname.includes('/room/create') && this.room.uuid) this.socket.emit('joined-room', this.room.uuid, this.user.uuid, clientID);
+            if(window.location.pathname.includes('/room/') && !window.location.pathname.includes('/room/create') && this.room.uuid) this.socket.emit('join-room', this.room.uuid, this.user.uuid, clientID);
 
             this.socket.on('update-user', user => {
                 let userIndex = this.room.users.findIndex(u => u.uuid === user.uuid);
 
                 this.room.users[userIndex].set(user);
+
+                //trigger listener if active
+                if(this.listeners['receive-users'] && typeof this.listeners['receive-users'] == typeof Function) {
+                    this.listeners['receive-users'](this.room.users);
+                }
+            });
+
+            this.socket.on('joined-room', (roomData) => {
+                console.log('roomData', roomData);
+                this.room.set(roomData);
 
                 //trigger listener if active
                 if(this.listeners['receive-users'] && typeof this.listeners['receive-users'] == typeof Function) {
@@ -95,6 +114,8 @@ function Chat(host = '/', port = 3001) {
                 } else {
                     var roomUser = new RoomUser;
                 }
+
+                console.log('roomUser', roomUser);
 
                 roomUser.set(user);
 

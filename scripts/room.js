@@ -18,6 +18,13 @@ function Room(roomData, instance) {
         if(key && (typeof key != 'object') && val) this.data[key] = value;
         if(key && (typeof key == 'object')) this.data = {...this.data, ...key};
 
+        this.instance.rooms = this.instance.rooms.map(room => {
+            if(room.uuid == this.data.uuid) return this.data;
+        });
+
+        localStorage.setItem('room', JSON.stringify(this.data));
+        localStorage.setItem('rooms', JSON.stringify(this.instance.rooms));
+
         return true;
     }
 

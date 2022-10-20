@@ -24,6 +24,26 @@ export default class App {
         this.server = http.createServer(this.router.getInstance());
         this.ws = new IOServer(this.server);
 
+        this.getRoom = (roomID) => {
+            if(!App.rooms.has(roomID)) return;
+
+            var room = App.rooms.get(roomID);
+            var roomData = {...room};
+
+            if(roomData.user) delete roomData.user;
+
+            var users = [];
+            
+            for(const [uuid, user] of roomData.users.get().entries()) {
+                users.push(user);
+            }
+
+            console.log('users', users);
+            roomData.users = users;
+
+            return roomData;
+        }
+
         this.getRooms = (userID, socket) => {
             if(!App.users.has(userID)) return;
 
@@ -85,30 +105,31 @@ export default class App {
                 socket.emit('room-created', roomData);
             });
 
-            socket.on('joined-room', (roomID, userID, clientID) => {
-                console.log('roomID', roomID);
+            socket.on('join-room', (roomID, userID, clientID) => {
                 let room = App.rooms.get(roomID);
                 if(!room) return;
                 
                 let user = App.users.get(userID);
                 const hasUser = room.hasUser(userID);
                 if(!user.online) user.online = true;
-
+                
                 if(!hasUser) {
                     user.rooms.push(roomID);
                     room.addUser(user);
                 }
-
+                
                 App.users.set(user);
                 App.rooms.set(room);
-
-                App.cache.set('rooms', App.rooms.get());
-                console.log('App.cache.get("rooms")', App.cache.get('rooms'));
-
+                
+                //App.cache.set('rooms', App.rooms.get());
+                
                 socket.join(roomID);
+                console.log('joined', roomID);
 
+                socket.emit('joined-room', this.getRoom(roomID));
+                
                 //socket.emit('receive-user', null, user);
-
+                
                 if(!hasUser) {
                     socket.to(roomID).emit('receive-user', clientID, user);
                 } else {

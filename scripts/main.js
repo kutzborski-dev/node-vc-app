@@ -29,6 +29,7 @@ if(createRoomForm) {
 }
 
 chat.on('receive-users', users => {
+    console.log('receive users', users);
     const roomUsers = document.querySelector("#room-users");
     if(!roomUsers) return;
 
