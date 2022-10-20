@@ -43,6 +43,7 @@ function Room(roomData, instance) {
         if(lastUser) {
             //Remove room if user was the last one in the room
             this.instance.rooms = this.instance.rooms.filter(room => room.uuid !== this.uuid);
+            localStorage.setItem('rooms', JSON.stringify(this.instance.rooms));
             this.data = null;
         }
         return true;
@@ -54,10 +55,16 @@ function Room(roomData, instance) {
     }
 
     this.create = (roomData) => {
+        roomData.uuid = uuid();
+        this.set(roomData);
+
         this.instance.socket.emit('create-room', roomData);
         this.instance.socket.on('room-created', data => {
             this.set(data);
-            this.instance.rooms.push(this);
+            this.instance.rooms.push(this.data);
+
+            localStorage.setItem('room', JSON.stringify(this.data));
+            localStorage.setItem('rooms', JSON.stringify(this.instance.rooms));
 
             location.href = '/room/'+ data.uuid;
         });

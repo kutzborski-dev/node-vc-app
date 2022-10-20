@@ -2,9 +2,9 @@ function Chat(host = '/', port = 3001) {
     this.listeners = {};
     this.socket = io('/');
     this.user = new User(this);
-    this.rooms = [];
+    this.rooms = localStorage.getItem('rooms') ? JSON.parse(localStorage.getItem('rooms')) : [];
     //Current room
-    this.room = new Room(null, this);
+    this.room = new Room((localStorage.getItem('room') ? JSON.parse(localStorage.getItem('room')) : null), this);
     this.peer = new Peer(undefined, {
         host,
         port,
@@ -52,9 +52,9 @@ function Chat(host = '/', port = 3001) {
             }
         });
         
-        console.log('this.room', this.room);
-        if(this.room && this.room.uuid) {
+        //if(this.room && this.room.uuid) {
             this.peer.on('connection', conn => {
+                if(!this.room.uuid) return;
                 conn.on('open', () => {
                     conn.on('data', data => {
                         switch(data.type) {
@@ -75,7 +75,8 @@ function Chat(host = '/', port = 3001) {
                 });
             });
         
-            this.socket.emit('joined-room', this.room.uuid, this.user.uuid, clientID);
+            console.log('this.room', this.room);
+            if(window.location.pathname.includes('/room/') && !window.location.pathname.includes('/room/create') && this.room.uuid) this.socket.emit('joined-room', this.room.uuid, this.user.uuid, clientID);
 
             this.socket.on('update-user', user => {
                 let userIndex = this.room.users.findIndex(u => u.uuid === user.uuid);
@@ -114,6 +115,6 @@ function Chat(host = '/', port = 3001) {
                     this.listeners['receive-users'](this.room.users);
                 }
             });
-        }
+        //}
     });
 }
