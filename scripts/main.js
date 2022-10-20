@@ -17,15 +17,17 @@ if(window.location.pathname.includes('login')) {
 
 if(!urlPath.match(/\/|home|login/) && !chat.user.isLoggedIn()) location.href = '/login';
 
-createRoomBtn.onclick = function() {
-    location.href = '/room/'+ uuid();
+if(createRoomBtn) {
+    createRoomBtn.onclick = function() {
+        location.href = '/room/'+ uuid();
+    }
 }
 
 chat.on('receive-users', users => {
     const roomUsers = document.querySelector("#room-users");
 
     if(roomUsers && users.length) {
-        roomUsers.innerHTML = users.map(user => '<span class="user user--'+ (user.online ? 'online' : 'offline') +'">'+ user.username +'</span>').join(', ');
+        roomUsers.innerHTML = users.map(user => `<span class="user user--${(user.online ? 'online' : 'offline')}">${user.username}</span>`).join(', ');
     }
 });
 
