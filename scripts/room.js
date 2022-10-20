@@ -16,7 +16,7 @@ function Room(roomData, instance) {
         if(!key) return;
         if(key && (typeof key != 'object' && !val)) return;
         if(key && (typeof key != 'object') && val) this.data[key] = value;
-        if(key && (typeof key == 'object')) this.data = key;
+        if(key && (typeof key == 'object')) this.data = {...this.data, ...key};
 
         return true;
     }
@@ -54,10 +54,9 @@ function Room(roomData, instance) {
     }
 
     this.create = (roomData) => {
-        console.log('roomData', roomData);
         this.instance.socket.emit('create-room', roomData);
         this.instance.socket.on('room-created', data => {
-            this.data = data;
+            this.set(data);
             this.instance.rooms.push(this);
 
             location.href = '/room/'+ data.uuid;

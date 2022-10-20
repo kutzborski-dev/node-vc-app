@@ -86,6 +86,7 @@ export default class App {
             });
 
             socket.on('joined-room', (roomID, userID, clientID) => {
+                console.log('roomID', roomID);
                 let room = App.rooms.get(roomID);
                 if(!room) return;
                 

@@ -54,7 +54,7 @@ export default class Router {
             if(!req.params.roomID || !isUuid(req.params.roomID)) return res.redirect('rooms');
 
             const rooms = App.cache.get('rooms');
-            console.log('rooms', rooms);
+            console.log('rooms----asjdahsdajks', rooms);
 
             res.render('views/room.ejs');
         });

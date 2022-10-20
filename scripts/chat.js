@@ -52,6 +52,7 @@ function Chat(host = '/', port = 3001) {
             }
         });
         
+        console.log('this.room', this.room);
         if(this.room && this.room.uuid) {
             this.peer.on('connection', conn => {
                 conn.on('open', () => {
