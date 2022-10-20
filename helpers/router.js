@@ -2,8 +2,6 @@ import * as path from 'path';
 import express from 'express';
 import App from '../services/app.js';
 import { isUuid, uuid } from 'uuidv4';
-import Room from './room.js';
-import User from './user.js';
 
 export default class Router {
     triggereQueue = [];
